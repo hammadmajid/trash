@@ -2,7 +2,7 @@
 
 #include "raylib.h"
 
-void drawMenu() {
+void drawMenu(int selectedIndex) {
     const int screenWidth = GetScreenWidth();
     const int screenHeight = GetScreenHeight();
 
@@ -26,7 +26,12 @@ void drawMenu() {
     for (int i = 0; i < menuLength; i++) {
         const int textWidth = MeasureText(menuItems[i], fontSize);
         const int textPosX = (screenWidth / 2) - (textWidth / 2);
-        DrawText(menuItems[i], textPosX, startYPos + (36 * (i + 1)), fontSize, LIGHTGRAY);
+
+        if (selectedIndex == i) {
+            DrawText(menuItems[i], textPosX, startYPos + (36 * (i + 1)), fontSize, DARKBLUE);
+        } else {
+            DrawText(menuItems[i], textPosX, startYPos + (36 * (i + 1)), fontSize, LIGHTGRAY);
+        }
     }
 }
 
@@ -35,11 +40,20 @@ int main() {
     SetConfigFlags(FLAG_FULLSCREEN_MODE);
     InitWindow(GetScreenWidth(), GetScreenHeight(), "Trash");
 
+    int selectedIndex = 0;
+
     while (!WindowShouldClose()) {
+        if (IsKeyPressed(KEY_DOWN)) {
+            selectedIndex = (selectedIndex + 1) % 3;
+        }
+        if (IsKeyPressed(KEY_UP)) {
+            selectedIndex = (selectedIndex - 1 + 3) % 3;
+        }
+
         BeginDrawing();
         ClearBackground(DARKGRAY);
 
-        drawMenu();
+        drawMenu(selectedIndex);
 
         EndDrawing();
     }
