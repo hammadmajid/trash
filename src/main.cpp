@@ -3,6 +3,13 @@
 
 #include "raylib.h"
 
+enum GameState {
+    Play,
+    Scoreboard,
+    Exit,
+    Menu,
+};
+
 constexpr int FONT_SIZE = 32;
 constexpr int MENU_SPACING = 36;
 
@@ -29,6 +36,8 @@ void drawMenuItems(const std::vector<std::string> &items, const int selectedInde
 }
 
 void drawMenu(const std::vector<std::string> &menuItems, const int selectedIndex) {
+    ClearBackground(DARKGRAY);
+
     const int screenWidth = GetScreenWidth();
     const int screenHeight = GetScreenHeight();
     const int startYPos = screenHeight / 6;
@@ -42,10 +51,22 @@ int main() {
     SetConfigFlags(FLAG_FULLSCREEN_MODE);
     InitWindow(GetScreenWidth(), GetScreenHeight(), "Trash");
 
+    GameState state = Menu;
+
     const std::vector<std::string> menuItems{"Play", "Scoreboard", "Exit"};
     int selectedIndex = 0;
 
-    while (!WindowShouldClose()) {
+    while (!WindowShouldClose() && state != Exit) {
+        if (IsKeyPressed(KEY_ENTER) && state == Menu) {
+            if (selectedIndex == 0) {
+                state = Play;
+            } else if (selectedIndex == 1) {
+                state = Scoreboard;
+            } else if (selectedIndex == 2) {
+                state = Exit;
+            }
+        }
+
         if (IsKeyPressed(KEY_DOWN)) {
             selectedIndex = (selectedIndex + 1) % static_cast<int>(menuItems.size());
         }
@@ -55,8 +76,18 @@ int main() {
         }
 
         BeginDrawing();
-        ClearBackground(DARKGRAY);
-        drawMenu(menuItems, selectedIndex);
+        switch (state) {
+            case Menu:
+                drawMenu(menuItems, selectedIndex);
+                break;
+            case Play:
+                ClearBackground(DARKGRAY);
+                break;
+            case Scoreboard:
+                ClearBackground(DARKGRAY);
+                break;
+            default: continue;
+        }
         EndDrawing();
     }
 
